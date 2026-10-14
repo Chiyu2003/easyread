@@ -25,6 +25,7 @@
   </label>
   <span class="grow"></span>
   <button class="engine-chip" id="engineChip"></button>
+  <button class="btn sm line" id="experimentsBtn">实验</button>
   <button class="btn accent" id="importBtn"></button>
   <button class="btn icon lang-btn" id="langBtn"></button>
   <button class="btn icon help-btn" id="helpBtn"></button>
@@ -61,6 +62,7 @@
 <div class="dialog-backdrop" id="trashDlg"><div class="dialog wide" role="dialog" aria-label="回收站"></div></div>
 <div class="dialog-backdrop" id="textDlg"><div class="dialog wide" role="dialog"></div></div>
 <div class="dialog-backdrop" id="citeExportDlg"><div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="citeExportTitle"></div></div>
+<div class="dialog-backdrop" id="experimentsDlg"><div class="dialog wide" role="dialog" aria-label="远程实验"></div></div>
 <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
 <div id="toast" role="status"></div>
 
@@ -90,6 +92,7 @@
 <script src="/web/js/library/settings-library.js"></script>
 <script src="/web/js/library/migrate-dialog.js"></script>
 <script src="/web/js/library/settings-cloud.js"></script>
+<script src="/web/js/library/experiments-ui.js"></script>
 <script src="/web/js/library/help.js"></script>
 <script src="/web/js/library/update.js"></script>
 <script src="/web/js/library/trash.js"></script>

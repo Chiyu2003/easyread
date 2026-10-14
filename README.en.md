@@ -110,6 +110,8 @@ Your browser opens `http://127.0.0.1:8765`. The server only listens on localhost
 
 ## Reading with an AI agent
 
+See the [Google Drive and lab runner guide](docs/google-drive-runner.md) for direct Drive sync and remote experiment setup.
+
 EasyRead ships with a CLI, so agents like Claude Code or Codex can read your notes and questions in a conversation, write answers next to the right paragraphs, or translate / re-translate pages themselves. The skill is in [`skill/paper-reading/SKILL.md`](skill/paper-reading/SKILL.md); put that folder in `~/.claude/skills/` or `~/.codex/skills/`.
 
 ```bash

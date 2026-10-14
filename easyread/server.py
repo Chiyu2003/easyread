@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
-from . import __version__, answer_styles, figures, chat, chat_models, chat_store, cli_models, config, detect, engines, i18n, langs, notehelp, open_link, paperdata, pdfwork, prefs, settings_api, trash, library_api, translate_api, updates, usage, wsock
+from . import __version__, answer_styles, figures, chat, chat_models, chat_store, cli_models, config, detect, engines, experiments, google_drive, i18n, langs, notehelp, open_link, paperdata, pdfwork, prefs, settings_api, trash, library_api, translate_api, updates, usage, wsock
 from .log import log, tail
 from .jobs import Jobs
 from .library import Library
@@ -207,6 +207,15 @@ class Handler(BaseHTTPRequestHandler):
                                     "library_status": app.location.status, "other_device": app.location.marker.other_device(),
                                     "engine": cfg.get("engine"), "engine_label": cli_models.engine_label(cfg),
                                     "first_run": config.is_first_run(), "version": __version__, "trash": len(trash.items(lib.root))})
+        if path == "/api/drive/status":
+            return self._json(200, google_drive.status())
+        if path == "/api/experiments":
+            drive_tasks = google_drive.all_tasks() if google_drive.status()["connected"] else []
+            local = {r["id"]: r for r in experiments.list_runs()}
+            for task in drive_tasks:
+                if task.get("id") in local:
+                    local[task["id"]].update({k: task.get(k) for k in ("state", "started", "finished", "exit_code", "outputs", "output_files", "log")})
+            return self._json(200, {"profiles": experiments.list_profiles(), "runs": sorted(local.values(), key=lambda r: r.get("created", ""), reverse=True)[:40]})
         if path == "/api/update":  # 有没有新版本（一天最多问一次 GitHub）
             return self._json(200, updates.check(force=parse_qs(url.query).get("force") == ["1"]))
         if path == "/api/trash":
@@ -320,6 +329,32 @@ class Handler(BaseHTTPRequestHandler):
 
         if path in library_api.POST:
             return self._json(200, library_api.post(app, path, json.loads(self._body() or b"{}")))
+        if path == "/api/drive/connect":
+            if config.temp_library():
+                raise ValueError("A temporary library cannot connect to Google Drive")
+            return self._json(200, google_drive.start_connect())
+        if path == "/api/drive/sync":
+            if config.temp_library():
+                raise ValueError("A temporary library cannot sync to Google Drive")
+            return self._json(200, google_drive.sync(app.lib.root))
+        if path == "/api/experiments/profiles":
+            return self._json(200, {"profile": experiments.save_profile(json.loads(self._body() or b"{}"))})
+        if path == "/api/experiments/queue":
+            body = json.loads(self._body() or b"{}")
+            if config.temp_library():
+                raise ValueError("A temporary library cannot queue remote experiments")
+            drive_status = google_drive.status()
+            if not drive_status["connected"] or not drive_status["last_sync"]:
+                raise ValueError("Connect Google Drive and sync the library before queuing a remote experiment")
+            paper_id = str(body.get("paper_id", ""))
+            if paper_id and not any(ws.id == paper_id for ws in app.lib.all()):
+                raise ValueError("Associated paper was not found in the library")
+            profile = experiments.get_profile(str(body.get("profile_id", "")))
+            run = experiments.new_run(profile, paper_id, body.get("params") or {})
+            queued = google_drive.create_task(run)
+            run["drive_file_id"] = queued["file_id"]
+            experiments.save_run(run)
+            return self._json(200, {"run": run, "duplicate": queued["duplicate"]})
         if path == "/api/update":  # 开关“自动检查新版本”
             config.save({"check_updates": bool(json.loads(self._body() or b"{}").get("enabled"))})
             return self._json(200, updates.check())

@@ -10,7 +10,7 @@
   async function load(s) {
     if (s.cloudLoading) return;
     s.cloudLoading = true; s.cloudError = "";
-    try { s.cloud = await PR.api("/api/library/location"); }
+    try { [s.cloud, s.drive] = await Promise.all([PR.api("/api/library/location"), PR.api("/api/drive/status")]); }
     catch (e) { s.cloudError = e.message; }
     finally { s.cloudLoading = false; redraw(); }
   }
@@ -59,6 +59,22 @@
         : '<p class="hint">' + PR.t("请关掉 EasyRead 再重新打开") + "</p>") + "</div>";
   }
 
+  function driveSection(s) {
+    const d = s.drive || {};
+    const blocked = d.temporary_library;
+    const connect = d.connected ? button("google-sync", busy ? PR.t("正在同步…") : PR.t("立即同步"), "", busy || blocked, true)
+      : button("google-connect", PR.t("连接 Google Drive"), "", busy || blocked || !d.credential_configured, true);
+    return '<h4 class="set-h">Google Drive</h4><div class="cloud-card"><div class="cloud-card-body"><b>' +
+      PR.esc(d.connected ? PR.t("已连接") : PR.t("未连接")) + '</b><span class="cloud-state">' +
+      PR.esc(d.connected ? (d.last_sync ? PR.t("上次同步：{time}", { time: d.last_sync }) : PR.t("首次同步会先复制本机文献库")) :
+        d.credential_configured ? PR.t("授权后可把文献库同步到 EasyRead 专用 Drive 文件夹") : PR.t("先设置 Google Desktop OAuth 客户端文件")) + '</span>' +
+      (!d.credential_configured && !d.connected ? '<div class="cloud-path">' + PR.esc(d.credential_path || "") + '</div>' : "") +
+      (s.driveResult ? '<span class="cloud-state">' + PR.esc(s.driveResult.message || "") + (s.driveResult.conflicts && s.driveResult.conflicts.length ? ' · ' + PR.t("冲突版本：{n}", { n: s.driveResult.conflicts.length }) : "") + '</span>' : "") +
+      '</div><div class="cloud-card-acts">' + connect + '</div></div>' +
+      (blocked ? '<p class="hint">' + PR.t("临时文献库不能连接 Google Drive 或同步实验任务。") + '</p>' :
+        !d.credential_configured && !d.connected ? '<p class="hint">' + PR.t("在 Google Cloud 创建 Desktop app OAuth client，将下载的 JSON 保存到上方路径；授权范围使用 drive.file。") + '</p>' : "");
+  }
+
   PR.settingsTabs.cloud = {
     render(s) {
       if (!s.cloud && !s.cloudLoading && !s.cloudError) load(s);
@@ -67,6 +83,7 @@
         '<p class="hint">' + (s.cloudLoading ? PR.t("正在检查文献库位置…") : "") + "</p>" + button("refresh", PR.t("重试"), "", s.cloudLoading) + "</div>";
       const inCloud = cloudOf(d), others = (d.candidates || []).filter((c) => c.path !== d.path);
       return '<div class="cloud-settings">' +
+        driveSection(s) +
         '<p class="set-lead">' + PR.t("网盘的同步文件夹也在电脑上，网盘客户端会把里面的文件自动传到云端。把文献库迁移到那里，换台电脑登录同一个网盘，论文、译文、笔记都还在。") + "</p>" +
         (s.cloudError ? '<p class="bad">' + PR.esc(s.cloudError) + "</p>" : "") + result(s) +
         '<h4 class="set-h">' + PR.t("本机") + "</h4>" +
@@ -89,6 +106,28 @@
       const action = b.dataset.cloud;
       if (busy || b.disabled) return true;
       try {
+        if (action === "google-connect") {
+          const popup = window.open("about:blank", "easyread-google-oauth", "popup,width=620,height=760");
+          const r = await PR.api("/api/drive/connect", { method: "POST", body: {} });
+          if (popup) popup.location = r.auth_url; else location.href = r.auth_url;
+          for (let i = 0; i < 180; i++) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            s.drive = await PR.api("/api/drive/status");
+            if (s.drive.connected) { if (popup && !popup.closed) popup.close(); await load(s); return true; }
+            if (s.drive.error) { if (popup && !popup.closed) popup.close(); throw new Error(s.drive.error); }
+          }
+          return true;
+        }
+        if (action === "google-sync") {
+          if (!s.drive.last_sync && !(await PR.confirm({ title: PR.t("首次同步文献库"),
+            body: PR.t("EasyRead 会把当前文献库复制到专用 Google Drive 文件夹。冲突版本会保留；请核对同步结果后，再在其他设备使用。"),
+            ok: PR.t("开始同步") }))) return true;
+          busy = true; redraw();
+          s.driveResult = await PR.api("/api/drive/sync", { method: "POST", body: {} });
+          s.drive = await PR.api("/api/drive/status");
+          PR.toast(s.driveResult.message || PR.t("同步完成"));
+          return true;
+        }
         if (action === "refresh") { await load(s); return true; }
         if (action === "reveal") { await PR.api("/api/library/reveal", { method: "POST", body: {} }); return true; }
         if (action === "restart") {

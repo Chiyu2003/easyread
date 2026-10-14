@@ -19,6 +19,9 @@ dist/
 .prefs.json
 .models-seen.json
 /promo/
+/google-oauth-client.json
+/google-drive.json
+/experiments/
 
 # 本机工具和内部工作记录
 .claude/

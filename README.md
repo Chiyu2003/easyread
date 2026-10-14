@@ -136,6 +136,8 @@ npm run dist
 
 ## 和 AI agent 一起读
 
+Google Drive 直接同步和远程实验 runner 的设置与安全说明见 [Google Drive 与实验室 runner](docs/google-drive-runner.md)。
+
 EasyRead 自带命令行，Claude Code / Codex 这类 agent 可以在对话里直接读你的笔记和问题、把回答写到对应段落旁边，也可以亲自翻译或重译某几页。技能说明在 [`skill/paper-reading/SKILL.md`](skill/paper-reading/SKILL.md)，把这个目录放进 `~/.claude/skills/` 或 `~/.codex/skills/` 即可。
 
 ```bash

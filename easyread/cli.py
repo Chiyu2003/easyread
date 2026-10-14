@@ -74,6 +74,12 @@ def cmd_serve(a):
     serve(a.port, a.open, exit_on_close=a.exit_on_close)
 
 
+def cmd_runner(a):
+    from .runner import main as runner_main
+    args = (["--once"] if a.once else []) + ["--poll-seconds", str(a.poll_seconds)]
+    return runner_main(args)
+
+
 def cmd_list(a):
     for s in lib().list():
         job = s.get("job") or {}
@@ -232,6 +238,8 @@ def main(argv=None):
     p = sub.add_parser("demo"); p.add_argument("id"); p.add_argument("--out", default="docs/demo"); p.add_argument("--credit", help="署名和许可说明")
     p.set_defaults(fn=cmd_demo)
     p = sub.add_parser("migrate"); p.add_argument("folder"); p.set_defaults(fn=cmd_migrate)
+    p = sub.add_parser("runner", help="poll Google Drive for lab experiment tasks"); p.add_argument("--once", action="store_true"); p.add_argument("--poll-seconds", type=int, default=30)
+    p.set_defaults(fn=cmd_runner)
     a = ap.parse_args(argv)
     if not a.cmd:  # 直接运行 easyread：启动并打开浏览器
         a = ap.parse_args(["serve", "--open"])

@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 easyread = "easyread.cli:main"
+easyread-runner = "easyread.runner:main"
 
 [build-system]
 requires = ["setuptools>=68"]
