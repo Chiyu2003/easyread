@@ -108,6 +108,20 @@
   });
   PR.$('[data-act="notes"]').innerHTML = PR.icon("note", "sm") + "<span>" + PR.t("笔记") + "</span>";
   PR.$('[data-act="chat"]').innerHTML = PR.icon("sparkle", "sm") + "<span>" + PR.t("问 AI") + "</span>";
+  const bindToolbarClick = (element, handler) => element.addEventListener("click", (event) => {
+    event.stopPropagation();
+    handler(event);
+  });
+  bindToolbarClick(PR.$('[data-act="drawer"]'), () => PR.toggleDrawer());
+  bindToolbarClick(PR.$('[data-act="notes"]'), () => PR.toggleNotesPanel());
+  bindToolbarClick(PR.$('[data-act="chat"]'), () => PR.toggleChat());
+  bindToolbarClick(PR.$('[data-act="settings"]'), () => {
+    PR.renderSettings();
+    PR.$("#settings").classList.toggle("open");
+  });
+  bindToolbarClick(PR.$('[data-act="about"]'), () => PR.toggleDrawer(true, "about"));
+  PR.$$('[data-view]').forEach((button) => bindToolbarClick(button, () => PR.setView(button.dataset.view)));
+  bindToolbarClick(PR.$("[data-order-menu]"), () => PR.toggleOrderMenu());
   /* 设置里关掉的功能：顶栏按钮也藏起来 */
   PR.applyFeatures = function () {
     const set = (sel, on) => { const el = PR.$(sel); if (el) el.style.display = on ? "" : "none"; };
@@ -117,19 +131,6 @@
     if (!PR.feature("chat") && PR.side === "chat") PR.openSide(null);
   };
   PR.on("ui-changed", () => { PR.applyFeatures(); PR.hideBlockbar && PR.hideBlockbar(); PR.renderMargin && PR.renderMargin(); });
-  PR.$("#bar").addEventListener("click", (e) => {
-    const v = e.target.closest("[data-view]");
-    if (v) return PR.setView(v.dataset.view);
-    if (e.target.closest("[data-order-menu]")) return PR.toggleOrderMenu();
-    const a = e.target.closest("[data-act]");
-    if (!a) return;
-    const act = a.dataset.act;
-    if (act === "drawer") PR.toggleDrawer();
-    if (act === "notes") PR.toggleNotesPanel();
-    if (act === "chat") PR.toggleChat();
-    if (act === "settings") { PR.renderSettings(); PR.$("#settings").classList.toggle("open"); }
-    if (act === "about") PR.toggleDrawer(true, "about");
-  });
   document.addEventListener("mousedown", (e) => {
     if (!e.target.closest("#settings, [data-act=settings]")) PR.$("#settings").classList.remove("open");
     if (!e.target.closest("#popover, a.cite, a.xref, mark.hl, .stale-tag, #blockbar")) PR.hidePopover();
