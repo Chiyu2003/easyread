@@ -98,6 +98,32 @@
 .counts b { font: 600 18px/1 var(--ui); font-variant-numeric: lining-nums tabular-nums; color: var(--ink); display: block; margin-bottom: 4px; }
 .pnote { font: 13.5px/1.8 var(--serif-zh); color: var(--ink-2); white-space: pre-wrap; max-height: 10em; overflow: hidden; }
 
+/* 延伸阅读推荐 */
+.recommendations { width: min(900px, 94vw); }
+.dialog.wide.recommendations { width: min(900px, 94vw); }
+.rec-head { display: flex; align-items: flex-start; gap: 16px; }
+.rec-head > div { flex: 1; }
+.rec-head h2 { margin-bottom: 4px !important; }
+.rec-head p { margin: 0 0 12px; }
+.rec-older { display: flex; align-items: center; gap: 7px; color: var(--ink-2); font-size: 13px; margin: 0 0 12px; }
+.rec-older input { accent-color: var(--accent); }
+.rec-loading, .rec-message { padding: 26px 12px; text-align: center; color: var(--ink-2); }
+.rec-list { display: grid; gap: 10px; max-height: 62vh; overflow: auto; padding: 2px 3px; }
+.rec-card { border: 1px solid var(--rule); background: var(--bg); border-radius: 10px; padding: 14px 16px; }
+.rec-card h3 { font: 600 15px/1.5 var(--serif-zh); margin: 0 0 5px; }
+.rec-meta, .rec-related { font-size: 12px; line-height: 1.6; color: var(--ink-3); overflow-wrap: anywhere; }
+.rec-related { margin-top: 4px; color: var(--ink-2); }
+.rec-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+.rec-summary { margin-top: 12px; border-top: 1px solid var(--rule); padding-top: 10px; }
+.rec-summary pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.8 var(--serif-zh); color: var(--ink-2); margin: 5px 0 0; }
+.rec-error { color: var(--danger); font-size: 12.5px; margin-top: 8px; }
+@media (max-width: 760px) {
+  .topbar #recommendBtn { min-height: 44px; padding: 0 8px; font-size: 12px; }
+  .rec-list { max-height: 58vh; }
+  .rec-card { padding: 12px; }
+  .rec-actions .btn { min-height: 44px; }
+}
+
 /* 拖放、导入、设置 */
 .drop-overlay { position: fixed; inset: 10px; z-index: 85; border: 2px dashed var(--accent); border-radius: 18px; background: color-mix(in srgb, var(--bg) 88%, transparent); display: grid; place-items: center; text-align: center; opacity: 0; pointer-events: none; transition: opacity .15s; }
 .drop-overlay.on { opacity: 1; }

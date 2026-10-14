@@ -25,6 +25,7 @@
   </label>
   <span class="grow"></span>
   <button class="engine-chip" id="engineChip"></button>
+  <button class="btn line" id="recommendBtn" aria-haspopup="dialog" aria-controls="recommendDlg">延伸阅读</button>
   <button class="btn accent" id="importBtn"></button>
   <button class="btn icon lang-btn" id="langBtn"></button>
   <button class="btn icon help-btn" id="helpBtn"></button>
@@ -61,6 +62,7 @@
 <div class="dialog-backdrop" id="trashDlg"><div class="dialog wide" role="dialog" aria-label="回收站"></div></div>
 <div class="dialog-backdrop" id="textDlg"><div class="dialog wide" role="dialog"></div></div>
 <div class="dialog-backdrop" id="citeExportDlg"><div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="citeExportTitle"></div></div>
+<div class="dialog-backdrop" id="recommendDlg"><div class="dialog wide recommendations" role="dialog" aria-modal="true" aria-labelledby="recommendTitle" tabindex="-1"></div></div>
 <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
 <div id="toast" role="status"></div>
 
@@ -74,6 +76,7 @@
 <script src="/web/js/common/theme.js"></script>
 <script src="/web/js/common/lang-toggle.js"></script>
 <script src="/web/js/library/app.js"></script>
+<script src="/web/js/library/recommendations.js"></script>
 <script src="/web/js/common/cite.js"></script>
 <script src="/web/js/common/cite-zotero.js"></script>
 <script src="/web/js/common/page-cap.js"></script>
