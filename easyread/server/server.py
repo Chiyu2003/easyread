@@ -18,6 +18,7 @@ from ..app import cli_models, config, i18n, open_link, prefs, updates
 from ..engines import detect, engines, usage
 from ..translate import langs
 from ..library import trash
+from .. import recommendations
 from . import settings_api, library_api, jobs_api, paper_api, wsock
 from ..app.log import log, tail
 from ..bulk import api as bulk_api
@@ -217,6 +218,14 @@ class Handler(BaseHTTPRequestHandler):
                                     "library_status": app.location.status, "other_device": app.location.marker.other_device(),
                                     "engine": cfg.get("engine"), "engine_label": cli_models.engine_label(cfg),
                                     "first_run": config.is_first_run(), "version": __version__, "trash": len(trash.items(lib.root))})
+        if path == "/api/recommendations":
+            query = parse_qs(url.query)
+            recent = query.get("recent", ["5"])[0]
+            years = query.get("years", ["3"])[0]
+            try:
+                return self._json(200, recommendations.find(lib, int(recent), int(years)))
+            except recommendations.RecommendationError as exc:
+                return self._json(503, {"error": str(exc)})
         if path == "/api/update":  # 有没有新版本（一天最多问一次 GitHub）
             return self._json(200, updates.check(force=parse_qs(url.query).get("force") == ["1"]))
         if path == "/api/trash":
@@ -337,6 +346,10 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/update":  # 开关“自动检查新版本”
             config.save({"check_updates": bool(json.loads(self._body() or b"{}").get("enabled"))})
             return self._json(200, updates.check())
+        if path == "/api/recommendations/summary":
+            body = json.loads(self._body() or b"{}")
+            result = recommendations.summarise(body.get("title", ""), body.get("abstract", ""), body.get("model"))
+            return self._json(200, result)
         if path == "/api/presence/keep":  # easyread serve 复用了关页会退出的服务：改成常驻
             if app.presence:
                 app.presence.keep()
