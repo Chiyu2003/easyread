@@ -59,6 +59,8 @@
  "开始同步": "Start sync",
  "首次同步会先复制本机文献库": "The first sync copies your local library",
  "首次同步文献库": "First library sync",
+ "切换到繁体中文界面": "Switch to Traditional Chinese interface",
+ "切换到简体中文界面": "Switch to Simplified Chinese interface",
  "繁体中文": "Traditional Chinese",
  "意大利语": "Italian",
  "文献库加载超时，请重试": "The library took too long to load. Please retry",

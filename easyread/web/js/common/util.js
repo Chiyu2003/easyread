@@ -28,7 +28,7 @@ window.PR = window.PR || {};
      繁体也算中文；否则用英文原标题，译文标题放第二行。short 是侧栏用的短标题 */
   PR.titles = function (i) {
     const tr = i.title_zh || "", en = i.title_en || "", lang = i.target || "zh";
-    if (tr && (PR.lang === lang.split("-")[0] || !en)) return { main: tr, sub: en, subLang: "en", short: i.short_zh || tr.split(/[：:]/)[0] };
+    if (tr && ((PR.lang.startsWith("zh") ? "zh" : PR.lang) === lang.split("-")[0] || !en)) return { main: tr, sub: en, subLang: "en", short: i.short_zh || tr.split(/[：:]/)[0] };
     return { main: en || PR.t("（未命名）"), sub: tr, subLang: lang, short: en.split(/:\s/)[0] || PR.t("（未命名）") };
   };
 
@@ -66,7 +66,7 @@ window.PR = window.PR || {};
     if (s < 3600) return PR.t("{n} 分钟前", { n: Math.floor(s / 60) });
     if (s < 86400) return PR.t("{n} 小时前", { n: Math.floor(s / 3600) });
     if (s < 86400 * 30) return PR.t("{n} 天前", { n: Math.floor(s / 86400) });
-    return new Date(iso).toLocaleDateString(PR.lang === "en" ? "en-US" : "zh-CN");
+    return new Date(iso).toLocaleDateString(PR.lang === "en" ? "en-US" : PR.lang === "zh-Hant" ? "zh-TW" : "zh-CN");
   };
 
   PR.uid = (p) => (p || "n") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);

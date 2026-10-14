@@ -14,7 +14,8 @@ from pathlib import Path
 
 # 不导入 config：config 间接导入了很多用 tr 的模块，这里保持没有包内依赖
 EN_PATH = Path(__file__).resolve().parent / "web" / "i18n" / "en.json"
-CHOICES = ("auto", "zh", "en")
+HANT_PATH = Path(__file__).resolve().parent / "web" / "i18n" / "zh-Hant.json"
+CHOICES = ("auto", "zh", "zh-Hant", "en")
 
 
 @lru_cache(maxsize=1)
@@ -29,9 +30,30 @@ def en_dict() -> dict:
         return {}
 
 
+@lru_cache(maxsize=1)
+def _hant_cached(mtime: float) -> dict:
+    return json.loads(HANT_PATH.read_text(encoding="utf-8"))
+
+
+def hant_dict() -> dict:
+    try:
+        return _hant_cached(HANT_PATH.stat().st_mtime)
+    except (OSError, ValueError):
+        return {}
+
+
 def _is_zh(tag: str | None) -> bool:
     tag = (tag or "").strip().lower().replace("_", "-")
     return tag.startswith("zh") or tag.startswith("chinese")
+
+
+def _language(tag: str | None) -> str:
+    normalized = (tag or "").strip().lower().replace("_", "-")
+    if not _is_zh(normalized):
+        return "en"
+    if "hant" in normalized or any(part in ("tw", "hk", "mo") for part in normalized.split("-")):
+        return "zh-Hant"
+    return "zh"
 
 
 @lru_cache(maxsize=1)
@@ -39,22 +61,23 @@ def system_lang() -> str:
     # 桌面版由 Electron 传进来（macOS 从启动台打开时拿不到 LANG）
     tag = os.environ.get("EASYREAD_SYSTEM_LANG")
     if tag:
-        return "zh" if _is_zh(tag) else "en"
+        return _language(tag)
     for var in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"):
         value = os.environ.get(var)
         if value and value not in ("C", "POSIX", "C.UTF-8"):
-            return "zh" if _is_zh(value) else "en"
+            return _language(value)
     if sys.platform == "win32":
         try:
             import ctypes
-            return "zh" if ctypes.windll.kernel32.GetUserDefaultUILanguage() & 0x3FF == 0x04 else "en"
+            lang_id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+            return "zh-Hant" if lang_id in (0x0404, 0x0C04, 0x1404) else "zh" if lang_id & 0x3FF == 0x04 else "en"
         except (AttributeError, OSError):
             pass
     if sys.platform == "darwin":
         try:
             out = subprocess.run(["defaults", "read", "-g", "AppleLanguages"], capture_output=True, text=True, timeout=3).stdout
             first = next((line.strip(' ",()') for line in out.splitlines() if line.strip(' ",()')), "")
-            return "zh" if _is_zh(first) else "en"
+            return _language(first)
         except (OSError, subprocess.SubprocessError):
             pass
     return "zh"  # 判断不出来时保持原来的中文
@@ -62,7 +85,7 @@ def system_lang() -> str:
 
 def choice() -> str:
     forced = os.environ.get("EASYREAD_LANG")  # 测试、排查问题时临时指定，优先于设置
-    if forced in ("zh", "en"):
+    if forced in ("zh", "zh-Hant", "en"):
         return forced
     from . import prefs
     value = (prefs.load().get("ui") or {}).get("lang")
@@ -71,13 +94,16 @@ def choice() -> str:
 
 def lang() -> str:
     value = choice()
-    return value if value in ("zh", "en") else system_lang()
+    return value if value in ("zh", "zh-Hant", "en") else system_lang()
 
 
 def tr(text: str, **kw) -> str:
     """中文原文 → 当前语言；{name} 占位符用 kw 填。"""
-    if lang() == "en":
+    language = lang()
+    if language == "en":
         text = en_dict().get(text) or text
+    elif language == "zh-Hant":
+        text = hant_dict().get(text) or text
     return text.format(**kw) if kw else text
 
 
@@ -87,8 +113,12 @@ def inject(page: str, language: str | None = None) -> str:
     language = language or lang()
     from . import config, langs  # 用到时再导入，见文件开头
     target = langs.valid(config.load().get("target"))  # 设置里的译文语言：按钮文字、没译过的论文用它
-    page = page.replace('<html lang="zh-CN">', f'<html lang="{"zh-CN" if language == "zh" else "en"}" data-lang-choice="{picked}" data-target="{target}">', 1)
+    html_lang = "en" if language == "en" else "zh-TW" if language == "zh-Hant" else "zh-CN"
+    page = page.replace('<html lang="zh-CN">', f'<html lang="{html_lang}" data-lang-choice="{picked}" data-target="{target}">', 1)
     if language == "en":
         payload = json.dumps(en_dict(), ensure_ascii=False).replace("<", "\\u003c")
         page = page.replace("</title>", f'</title>\n<script id="pr-i18n" type="application/json">{payload}</script>', 1)
+    elif language == "zh-Hant":
+        payload = json.dumps(hant_dict(), ensure_ascii=False).replace("<", "\\u003c")
+        page = page.replace("</title>", f'</title>\n<script id="pr-i18n-hant" type="application/json">{payload}</script>', 1)
     return page

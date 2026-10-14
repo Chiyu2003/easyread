@@ -98,6 +98,7 @@
       if (!st.lang || st.lang === PR.langChoice) return location.reload();
     }
     if (st.lang && st.lang !== PR.langChoice) {  // 换界面语言：存好后刷新，页面由后端按新语言重新生成
+      if (st.lang === "zh" || st.lang === "zh-Hant") PR.ls.set("easyread-last-chinese-lang", st.lang);
       await PR.api("/api/prefs", { method: "POST", body: { ui: { lang: st.lang } } });
       return location.reload();
     }
