@@ -40,6 +40,8 @@
  "新版本 {v} 可以更新": "Version {v} is available",
  "版本 {v}": "Version {v}",
  "简体中文": "Simplified Chinese",
+ "切换到繁体中文界面": "Switch to Traditional Chinese interface",
+ "切换到简体中文界面": "Switch to Simplified Chinese interface",
  "繁体中文": "Traditional Chinese",
  "意大利语": "Italian",
  "文献库加载超时，请重试": "The library took too long to load. Please retry",

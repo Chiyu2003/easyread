@@ -22,7 +22,7 @@
         "</div>" + '<div class="settings-sec grid2"><label class="field"><span>' + PR.t("界面主题") + '</span><select class="input" id="themeSel">' +
         PR.opt([["auto", PR.t("跟随系统")], ["light", PR.t("浅色")], ["dark", PR.t("深色")]], s.theme) + "</select></label>" +
         (location.protocol === "file:" ? "" : '<label class="field"><span>' + PR.t("界面语言") + '</span><select class="input" id="langSel">' +
-          PR.opt([["auto", PR.t("跟随系统")], ["zh", PR.t("中文")], ["en", PR.t("英文")]], s.lang || PR.langChoice) + "</select></label>") +
+          PR.opt([["auto", PR.t("跟随系统")], ["zh", PR.t("简体中文")], ["zh-Hant", PR.t("繁体中文")], ["en", PR.t("英文")]], s.lang || PR.langChoice) + "</select></label>") +
         (location.protocol === "file:" ? "" : '<label class="field"><span>' + PR.t("论文译成") + '</span><select class="input" id="targetSel">' +
           PR.opt(PR.TARGETS, s.target || PR.target) + "</select></label>") + "</div>" +
         (location.protocol === "file:" ? "" : '<p class="set-lead">' + PR.t("新翻译的论文用这个语言；已经译过的论文保持原来的语言。不需要译文的话，导入时选“读英文原文”。") + "</p>");

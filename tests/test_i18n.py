@@ -19,7 +19,8 @@ class I18nTest(unittest.TestCase):
         i18n.system_lang.cache_clear()
 
     def test_system_lang_from_electron(self):
-        for tag, want in (("zh-CN", "zh"), ("zh-TW", "zh"), ("en-US", "en"), ("de", "en"), ("ja", "en")):
+        for tag, want in (("zh-CN", "zh"), ("zh-TW", "zh-Hant"), ("zh-HK", "zh-Hant"),
+                          ("zh-Hant", "zh-Hant"), ("en-US", "en"), ("de", "en"), ("ja", "en")):
             i18n.system_lang.cache_clear()
             with mock.patch.dict(os.environ, {"EASYREAD_SYSTEM_LANG": tag}):
                 self.assertEqual(i18n.system_lang(), want, tag)
@@ -44,6 +45,9 @@ class I18nTest(unittest.TestCase):
                 self.assertEqual(i18n.tr("词典里没有"), "词典里没有")
             with mock.patch.object(i18n, "lang", lambda: "zh"):
                 self.assertEqual(i18n.tr("已导入 {n} 篇", n=3), "已导入 3 篇")
+            with mock.patch.object(i18n, "hant_dict", lambda: {"已导入 {n} 篇": "已匯入 {n} 篇"}):
+                with mock.patch.object(i18n, "lang", lambda: "zh-Hant"):
+                    self.assertEqual(i18n.tr("已导入 {n} 篇", n=3), "已匯入 3 篇")
 
     def test_inject(self):
         page = '<html lang="zh-CN">\n<head><title>EasyRead</title></head>'
@@ -53,10 +57,20 @@ class I18nTest(unittest.TestCase):
         self.assertIn('<html lang="en"', out)
         self.assertIn('id="pr-i18n"', out)
         self.assertNotIn("Settings</script>", out)  # 词典里的 < 要转义，不能提前结束 script
+        with mock.patch.object(i18n, "hant_dict", lambda: {"设置": "設定"}):
+            out = i18n.inject(page, "zh-Hant")
+        self.assertIn('<html lang="zh-TW"', out)
+        self.assertIn('id="pr-i18n-hant"', out)
 
     def test_every_ui_string_has_english(self):
         result = subprocess.run([sys.executable, str(ROOT / "scripts" / "i18n_check.py")], capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(result.returncode, 0, result.stdout[-3000:])
+
+    def test_every_ui_string_has_traditional_chinese(self):
+        from scripts.i18n_check import collect
+        keys, _ = collect()
+        hant = i18n.hant_dict()
+        self.assertEqual(keys - set(hant), set())
 
 
 if __name__ == "__main__":
