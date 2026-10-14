@@ -99,19 +99,26 @@
   };
   PR.$('[data-act="drawer"]').innerHTML = PR.icon("menu");
   PR.$('[data-act="pages"]').innerHTML = PR.icon("page", "sm") + "<span>PDF</span>";
+  const bindToolbarClick = (element, handler) => {
+    let pointerHandled = false;
+    element.addEventListener("pointerup", (event) => {
+      if (event.button !== 0) return;
+      pointerHandled = true;
+      setTimeout(() => { pointerHandled = false; }, 0);
+      event.stopPropagation();
+      handler(event);
+    });
+    element.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (pointerHandled && event.detail > 0) return;
+      handler(event);
+    });
+  };
   const pagesButton = PR.$('[data-act="pages"]');
   pagesButton.addEventListener("mouseenter", () => PR.preloadPage && PR.preloadPage());  // 鼠标移过去就开始加载
-  // Handle the PDF toggle on the button itself instead of relying on click bubbling through the topbar.
-  pagesButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    PR.togglePages();
-  });
+  bindToolbarClick(pagesButton, () => PR.togglePages());
   PR.$('[data-act="notes"]').innerHTML = PR.icon("note", "sm") + "<span>" + PR.t("笔记") + "</span>";
   PR.$('[data-act="chat"]').innerHTML = PR.icon("sparkle", "sm") + "<span>" + PR.t("问 AI") + "</span>";
-  const bindToolbarClick = (element, handler) => element.addEventListener("click", (event) => {
-    event.stopPropagation();
-    handler(event);
-  });
   bindToolbarClick(PR.$('[data-act="drawer"]'), () => PR.toggleDrawer());
   bindToolbarClick(PR.$('[data-act="notes"]'), () => PR.toggleNotesPanel());
   bindToolbarClick(PR.$('[data-act="chat"]'), () => PR.toggleChat());
