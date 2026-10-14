@@ -1,0 +1,45 @@
+.recommend-dialog { width: min(900px, 94vw); height: min(820px, 90vh); max-height: none; padding: 0; display: flex; flex-direction: column; }
+.recommend-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 22px 26px 14px; border-bottom: 1px solid var(--rule); }
+.recommend-head h2 { margin: 0 0 4px; }
+.recommend-head p { margin: 0; color: var(--ink-3); font-size: 13px; line-height: 1.55; }
+.recommend-head .btn { flex: none; }
+.recommend-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding: 14px 26px; border-bottom: 1px solid var(--rule); color: var(--ink-2); font-size: 13px; }
+.recommend-controls label { display: inline-flex; align-items: center; gap: 7px; }
+.recommend-controls select { width: 64px; height: 32px; padding: 0 7px; }
+.recommend-controls .btn { margin-left: auto; }
+.recommend-status { min-height: 24px; padding: 8px 26px 0; color: var(--ink-3); font-size: 12.5px; }
+.recommend-status .err { color: var(--danger); }
+.recommend-results { flex: 1; overflow: auto; padding: 4px 26px 26px; }
+.recommend-empty { padding: 44px 16px; color: var(--ink-3); text-align: center; }
+.recommend-card { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.recommend-card-head { display: flex; align-items: baseline; gap: 12px; }
+.recommend-card h3 { margin: 0; font: 600 17px/1.45 var(--serif-zh); }
+.recommend-card h3 a { color: var(--ink); text-decoration: none; }
+.recommend-card h3 a:hover { color: var(--accent); }
+.recommend-score { flex: none; color: var(--accent); font-size: 11px; }
+.recommend-meta, .recommend-reason { margin: 5px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.6; }
+.recommend-meta a { color: var(--accent); text-decoration: none; }
+.recommend-meta a:hover { text-decoration: underline; }
+.recommend-meta span { margin: 0 5px; }
+.recommend-reason { color: var(--ink-2); }
+.recommend-abstract { margin-top: 12px; color: var(--ink-2); }
+.recommend-abstract summary { width: fit-content; cursor: pointer; color: var(--accent); font-size: 12.5px; }
+.recommend-abstract p { margin: 8px 0 12px; max-height: 12em; overflow: auto; font: 13px/1.7 var(--serif-en); white-space: pre-wrap; }
+.recommend-missing { margin: 11px 0; color: var(--ink-3); font-size: 12px; }
+.recommend-card > .btn { margin-top: 12px; }
+.recommend-loading { color: var(--accent); font-size: 12.5px; }
+.recommend-ai { margin-top: 14px; padding: 14px 16px; border-left: 2px solid var(--accent); background: var(--bg); border-radius: 0 8px 8px 0; }
+.recommend-ai h4 { margin: 0 0 6px; color: var(--ink-3); font-size: 11.5px; font-weight: 600; letter-spacing: .04em; }
+.recommend-ai p { margin: 0 0 12px; color: var(--ink-2); font: 13px/1.75 var(--serif-zh); white-space: pre-wrap; }
+.recommend-ai dl { display: grid; grid-template-columns: 72px 1fr; gap: 6px 12px; margin: 0 0 8px; font-size: 12.5px; line-height: 1.65; }
+.recommend-ai dt { color: var(--ink-3); }
+.recommend-ai dd { margin: 0; color: var(--ink-2); white-space: pre-wrap; }
+.recommend-ai small { color: var(--ink-3); }
+@media (max-width: 760px) {
+  .list-head { gap: 6px; padding: 14px 12px 10px; flex-wrap: wrap; }
+  .recommend-dialog { width: 96vw; height: 92vh; border-radius: 11px; }
+  .recommend-head, .recommend-controls { padding-left: 16px; padding-right: 16px; }
+  .recommend-status { padding-left: 16px; padding-right: 16px; }
+  .recommend-results { padding-left: 16px; padding-right: 16px; }
+  .recommend-controls .btn { margin-left: 0; }
+}

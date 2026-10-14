@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="/web/css/settings.css">
 <link rel="stylesheet" href="/web/css/page-cap.css">
 <link rel="stylesheet" href="/web/css/pick-pages.css">
+<link rel="stylesheet" href="/web/css/recommendations.css">
 <link rel="stylesheet" href="/web/css/settings-cloud.css">
 <link rel="stylesheet" href="/web/css/usage.css">
 <script>try{var p=JSON.parse((localStorage.getItem("easyread-prefs")||localStorage.getItem("coread-prefs"))||"{}");var d=p.theme==="dark"||(p.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=d?"dark":"light"}catch(e){}</script>
@@ -41,6 +42,7 @@
       <h1 id="viewTitle">全部论文</h1>
       <span class="count" id="count"></span>
       <span class="grow"></span>
+      <button class="btn sm line" id="recommendBtn">延伸阅读</button>
       <button class="btn sm line danger" id="stopAllBtn" hidden></button>
       <button class="btn sm line" id="pickBtn" disabled></button>
       <div class="batch-bar" id="batchBar"></div>
@@ -66,6 +68,7 @@
 <div class="dialog-backdrop" id="trashDlg"><div class="dialog wide" role="dialog" aria-label="回收站"></div></div>
 <div class="dialog-backdrop" id="textDlg"><div class="dialog wide" role="dialog"></div></div>
 <div class="dialog-backdrop" id="citeExportDlg"><div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="citeExportTitle"></div></div>
+<div class="dialog-backdrop" id="recommendDlg"><div class="dialog wide recommend-dialog" role="dialog" aria-modal="true" aria-labelledby="recommendTitle"></div></div>
 <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
 <div id="toast" role="status"></div>
 
@@ -83,6 +86,7 @@
 <script src="/web/js/common/cite-zotero.js"></script>
 <script src="/web/js/common/page-cap.js"></script>
 <script src="/web/js/library/cite-export.js"></script>
+<script src="/web/js/library/recommendations.js"></script>
 <script src="/web/js/library/batch.js"></script>
 <script src="/web/js/library/stop-jobs.js"></script>
 <script src="/web/js/library/cat-tree.js"></script>
