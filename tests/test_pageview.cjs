@@ -39,7 +39,7 @@ function reader(mode = "server") {
     jumpTo(id) { this.jumped = id; },
     fitWide() {}, renderMargin() {},
   };
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../easyread/web/js/reader/pageview.js"), "utf8"), {
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../easyread/web/js/reader/pdf-panel.js"), "utf8"), {
     window: { PR, scrollY: 0, innerHeight: 800, scrollTo: value => scrolls.push(value) }, document: { body: node("body"), addEventListener: (name, fn) => documentEvents.set(name, fn), getElementById: id => nodes.get(id) || null, createElement: () => node("created-" + nodes.size) },
     devicePixelRatio: 1, Image: class {}, setTimeout: () => 1, clearTimeout() {},
   });
