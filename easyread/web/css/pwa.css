@@ -1,0 +1,6 @@
+.pwa-offline-shelf { margin: 0 0 18px; padding: 16px 18px; border: 1px solid var(--rule); border-radius: 14px; background: var(--panel); }
+.pwa-offline-shelf h2 { margin: 0 0 10px; font: 600 15px/1.4 var(--ui); }
+.pwa-offline-shelf p { margin: 0; color: var(--muted); font: 13px/1.6 var(--ui); }
+.pwa-offline-shelf ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.pwa-offline-shelf a { display: block; padding: 8px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font: 14px/1.5 var(--ui); }
+.pwa-offline-shelf a:hover { background: var(--hover); }

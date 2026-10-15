@@ -204,6 +204,16 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(200, open_link.version())
         if path.startswith("/web/"):
             return self._file(_safe(WEB, path[5:]), cache=path.startswith("/web/vendor/"))
+        if path == "/sw.js":
+            body = (WEB / "sw.js").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/javascript; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Service-Worker-Allowed", "/")
+            self.end_headers()
+            if self.command != "HEAD": self.wfile.write(body)
+            return
         if path == "/api/presence" and wsock.is_upgrade(self.headers):
             return self._presence()
         location = library_api.get(app, path)

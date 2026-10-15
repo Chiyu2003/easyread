@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EasyRead</title>
 <link rel="icon" href="/web/favicon.svg">
+<link rel="manifest" href="/web/manifest.webmanifest">
+<link rel="stylesheet" href="/web/css/pwa.css">
 <link rel="stylesheet" href="/web/vendor/katex/katex.min.css">
 <link rel="stylesheet" href="/web/css/base.css">
 <link rel="stylesheet" href="/web/css/reader.css">
@@ -41,6 +43,7 @@
   <button class="btn" data-act="pages" title="PDF 原页，跟随阅读位置（O）"></button>
   <button class="btn" data-act="notes" title="笔记面板（M）"></button>
   <button class="btn" data-act="chat" title="边读边问 AI（A）"></button>
+  <button class="btn" data-pwa-cache title="供離線閱讀">離線閱讀</button>
   <button class="btn" data-act="settings" title="字号、版心、字体（=、- 调字号）">Aa</button>
   <button class="save-state" data-act="about" title="保存状态"><i></i><span>…</span></button>
 </header>
@@ -127,5 +130,6 @@
 <script src="/web/js/common/settings-tabs.js"></script>
 <script src="/web/js/common/settings-chat.js"></script>
 <script src="/web/js/reader/main.js"></script>
+<script src="/web/js/common/pwa.js"></script>
 </body>
 </html>
