@@ -60,6 +60,10 @@
 
   /* 页面调用这个提交修改 */
   PR.commit = function (op) {
+    if (PR.pwa && PR.pwa.readOnly && mode === "server") {
+      if (op.op !== "progress") PR.toast(PR.t("目前離線；連線後才能新增或修改筆記"), null, 5000);
+      return false;
+    }
     op.at = op.at || PR.nowIso();
     // 同一目标还没发出去的旧操作合并掉，避免队列无限长
     if (op.op === "note") outbox = outbox.filter((o) => !(o.op === "note" && o.note.id === op.note.id));
@@ -124,6 +128,7 @@
       if (!PR.pid) throw new Error(PR.t("地址里没有论文 id"));
       const r = await fetch(base() + "/state", { cache: "no-store" });
       if (!r.ok) throw new Error(r.status === 404 ? PR.t("文献库里没有这篇论文") : PR.t("读取数据失败：{status}", { status: r.status }));
+      if (r.headers.get("X-EasyRead-Offline") === "1") PR.pwa?.setConnectivity(true);
       const d = await r.json();
       PR.token = d.token;
       Object.assign(S, { paper: d.paper, discussion: d.discussion, layout: d.layout || {}, item: d.item || {}, job: d.job || {}, versions: d.versions, engine: d.engine });
@@ -148,7 +153,10 @@
     if (mode !== "server" || document.hidden) return;
     let v;
     try {
-      v = await (await fetch(base() + "/versions", { cache: "no-store" })).json();
+      const response = await fetch(base() + "/versions", { cache: "no-store" });
+      if (response.headers.get("X-EasyRead-Offline") === "1") PR.pwa?.setConnectivity(true);
+      else if (PR.pwa && navigator.onLine) PR.pwa.setConnectivity(false);
+      v = await response.json();
       if (PR.store.status === "offline") flush();
     } catch (e) {
       if (!outbox.length) setStatus("offline", PR.t("未连上本地服务（只读）"));
@@ -181,6 +189,7 @@
 
   /* 让模型做事（回答问题、重译一段）：交给服务的小任务队列 */
   PR.ask = async function (kind, body) {
+    if (PR.pwa && PR.pwa.readOnly) throw new Error(PR.t("目前離線；連線後才能使用 AI"));
     const job = await PR.api(base() + "/" + kind, { method: "POST", body });
     PR.emit("job-started", job);
     const t = setInterval(async () => {

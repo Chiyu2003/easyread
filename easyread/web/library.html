@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EasyRead</title>
 <link rel="icon" href="/web/favicon.svg">
+<link rel="manifest" href="/web/manifest.webmanifest">
+<link rel="stylesheet" href="/web/css/pwa.css">
 <link rel="stylesheet" href="/web/css/base.css">
 <link rel="stylesheet" href="/web/css/library.css">
 <link rel="stylesheet" href="/web/css/cite-export.css">
@@ -28,6 +30,7 @@
   </label>
   <span class="grow"></span>
   <button class="engine-chip" id="engineChip"></button>
+  <button class="btn sm" data-pwa-install hidden>安裝 EasyRead</button>
   <button class="btn accent" id="importBtn"></button>
   <button class="btn icon lang-btn" id="langBtn"></button>
   <button class="btn icon help-btn" id="helpBtn"></button>
@@ -106,5 +109,6 @@
 <script src="/web/js/library/help.js"></script>
 <script src="/web/js/library/update.js"></script>
 <script src="/web/js/library/trash.js"></script>
+<script src="/web/js/common/pwa.js"></script>
 </body>
 </html>
